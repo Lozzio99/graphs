@@ -1,0 +1,110 @@
+package dke.group.five.utils.chromaticNumber;
+
+import dke.group.five.exceptions.TaskCancelledException;
+
+public class ChromaticMinimum {
+    public static ILowest min;
+    private int count;
+    private int possible ;
+    public int [] solution ;
+    public static int [] path;
+    public int [][] graph;
+    public GiveHint[] allSolutions;
+
+    public static double start ;
+
+    public ChromaticMinimum()
+    {
+        start = System.nanoTime();
+        count = 0;
+        min = null;
+        solution= null;
+        path = null;
+        graph= null;
+    }
+    public void add (ILowest x ) throws TaskCancelledException {
+
+        if (x != null)
+        {
+
+            if ((count == 0)||(x.chromatic() < min.chromatic()))
+            {
+                possible ++;
+                allSolutions = new GiveHint[1];
+                allSolutions[0] = new GiveHint(x.getRouteB(),x.colouredArray());
+                System.out.print(((System.nanoTime()-start)/(1000000000)) + " seconds ");
+                System.out.println(" iteration > "+ (count+1) + "|| cn ->" + x.chromatic());
+                min = x;
+                solution = x.colouredArray();
+                int [] oo =x.getRouteB();
+                path = oo;
+                graph= x.getGraph();
+            }
+            count++;
+        }
+    }
+    public ILowest getMinimum()
+    {
+        System.out.println("possible solutions for the lowest>"+possible);
+        return min;
+    }
+    public GiveHint [] getHint()
+    {
+        return allSolutions;
+    }
+
+    public int []  getSolution()
+    {
+        return solution;
+    }
+    public int [] getRouteB()
+    {
+        return path;
+    }
+    public int [][] getGraph()
+    {
+        return graph;
+    }
+
+
+
+    public class GiveHint
+    {
+        private int [] route_followed;
+        private int [] all_colours;
+        public String [] Hints;
+        public GiveHint(int [] route, int [] solution)
+        {
+            route_followed = route;
+            all_colours = solution;
+            Hints = new String[route.length-1];
+            setHints();
+        }
+        public void setHints()
+        {
+          int counter = 0;
+          for (int i = 0; i<this.route_followed.length-1; i++)
+          {
+            int vertex = this.route_followed[i]+1;
+            int adjacent = this.route_followed[i+1]+1;
+            String pair = "The vertex "+ vertex+ " and the vertex " + adjacent + " should have ";
+            if (all_colours[i] == all_colours[i+1])
+            {
+              pair+= "the same colours ";
+            }
+            else
+            {
+              pair += "different colours ";
+            }
+            pair+="\n";
+            this.Hints[counter] = pair;
+            counter++;
+
+          }
+        }
+        public String [] toHint()
+        {
+          return this.Hints;
+        }
+    }
+}
