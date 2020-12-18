@@ -1,0 +1,32 @@
+import java.util.*;
+
+public class VertexHint
+{
+    public int vertex;
+    public ArrayList<Integer> samecolours;
+    public ArrayList<Integer> differentcolours;
+    public VertexHint(int id)
+    {
+        this.vertex = id;
+    }
+    public void setSame(ArrayList<Integer> same)
+    {
+        this.samecolours = same;
+    }
+    public void setDifferent(ArrayList<Integer> different)
+    {
+        this.differentcolours = different;
+    }
+    public int getId()
+    {
+        return this.vertex;
+    }
+    public ArrayList<Integer> getSamecolours()
+    {
+        return this.samecolours;
+    }
+    public ArrayList<Integer> getDifferentcolours()
+    {
+        return this.differentcolours;
+    }
+}

@@ -1,0 +1,58 @@
+import java.util.Arrays;
+public class ChromaticNumber
+{
+  public  int [][] graph;
+  public int [] result ;
+  public Casual random;
+  public BackTracking bt;
+  public Lowest min ;
+  public int [] route;
+  public VertexHint [] vertexH ;  //The Vertex Hints are reachable from there as well
+  public static double start ;
+
+  public ChromaticNumber(ColEdge [] e , int s , int m , int t)
+  {
+    start = System.nanoTime();
+    ChromaticMin back = new ChromaticMin();
+    int [][] matrix = new int [s][s];
+		matrix =createGraphMatrix(e , s , m);
+		graph = matrix;
+
+
+    int [] path = new int [s];
+    for (int i = 0; i< s; i++)
+    {
+      path[i] = i;
+    }
+    bt = new BackTracking (graph, path);
+    route = path;
+    for (int i = 0;i<500000;i++)      //O(500.000)
+    {
+      random = new Casual (matrix, route, 1);
+      graph = random.changeMatrix();
+      int [] randomly = new int [graph.length];
+      randomly = random.getRoute();
+      bt = new BackTracking (graph, randomly);
+      result = bt.colouredArray();
+      back.add(bt);
+    }
+    System.out.println("-----------");
+    min = back.getMinimum();
+
+    System.out.println("minimum is " + min.chromatic());
+    System.out.println("colors >"+Arrays.toString(min.colouredArray()));
+    System.out.print("route > "+ Arrays.toString(min.getRouteB()));
+    System.out.println("End of analysis at >" +((System.nanoTime()-start)/(1000000000)) + " seconds" );
+    //System.out.println(Arrays.toString(back.getHint().toHint()));               //String hints
+    //System.out.println(Arrays.toString(back.getHint().toPersonalised()));       //String hints
+    this.vertexH = back.getHint().getVertexHint();                                //Object hints
+    for (VertexHint v : this.vertexH)
+    {
+        if (v != null)
+        {
+            System.out.println("vertex : "+ v.getId());
+            System.out.println("same colour as : "+v.getSamecolours());
+            System.out.println("different colour from :"+v.getDifferentcolours());
+        }
+    }
+  }

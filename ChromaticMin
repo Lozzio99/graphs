@@ -1,0 +1,151 @@
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.*;
+
+public class ChromaticMin
+{
+  public static Lowest min;
+  private int count;
+  private int possible ;
+  public int [] solution ;
+  public static int [] path;
+  public int [][] graph;
+  public GiveHint hint ;
+  public VertexHint [] vertexH;
+  public static double start ;
+  public ChromaticMin ()
+  {
+    start = System.nanoTime();
+    count = 0;
+    min = null;
+    solution= null;
+    path = null;
+    graph= null;
+    vertexH = null;
+  }
+  public void add (Lowest x )  //O(n)
+  {
+    if (x != null)
+    {
+      if ((count == 0)||(x.chromatic() < min.chromatic()))
+      {
+        possible ++;
+        hint = new GiveHint(x.getRouteB(),x.colouredArray());
+        vertexH = new VertexHint[x.getRouteB().length-1];
+        System.out.print(((System.nanoTime()-start)/(1000000000)) + " seconds ");
+        System.out.println(" iteration > "+ (count+1) + "|| cn ->" + x.chromatic());
+        this.min = x;
+        int [] solution1 = x.colouredArray();
+        int [] oo =x.getRouteB();
+        solution = solution1;
+        path = oo;
+        graph= x.getGraph();
+      }
+      count++;
+    }
+  }
+  public Lowest getMinimum()
+  {
+    System.out.println("possible solutions for the lowest>"+possible);
+    return min;
+  }
+  public GiveHint getHint()
+  {
+    return this.hint;
+  }        //Object for both String hints
+  public int []  getSolution()
+  {
+    return this.solution;
+  }
+  public int [] getRouteB()
+  {
+    return this.path;
+  }
+  public int [][] getGraph()
+  {
+    return this.graph;
+  }
+
+  public class GiveHint
+  {
+    public int [] route_followed;
+    public int [] all_colours;
+    public String [] Hints;
+    public String [] Personalised;
+    public VertexHint [] vertexH;                 //Object object hints
+    public ArrayList<Integer> equa;
+    public ArrayList<Integer> diff;
+    public GiveHint(int [] route, int [] solution)
+    {
+      route_followed = route;
+      all_colours = solution;
+      Hints = new String[route.length-1];
+      setHints();
+      Personalised = new String[route.length];
+      this.vertexH = new VertexHint[route.length];
+      calculateSubgroups();
+    }
+    public void setHints()
+    {
+      int counter = 0;
+      for (int i = 0; i<this.route_followed.length-1; i++)
+      {
+        int vertex = this.route_followed[i]+1;
+        int adjacent = this.route_followed[i+1]+1;
+        String pair = "The vertex "+ vertex+ " and the vertex " + adjacent + " should have ";
+        if (all_colours[i] == all_colours[i+1])
+        {
+          pair+= "the same colours ";
+        }
+        else
+        {
+          pair += "different colours ";
+        }
+        pair+="\n";
+        this.Hints[counter] = pair;
+        counter++;
+      }
+    }
+    public void calculateSubgroups()
+    {
+      for (int i = 0; i< this.route_followed.length; i++)
+      {
+        int count = 0;
+        int vertex = this.route_followed[i]+1;
+        this.vertexH[vertex-1] = new VertexHint(vertex);
+        this.equa = new ArrayList<> ();
+        this.diff = new ArrayList<> ();
+        int colour = this.all_colours[i];
+        this.Personalised[vertex-1] = "Color vertex "+ vertex ;
+        for (int k = 0; k<this.route_followed.length; k++)
+        {
+          if (i != k)
+          {
+            if (this.all_colours[i] == this.all_colours[k])
+            {
+              this.equa.add(this.route_followed[k]+1);
+              int same = (this.route_followed[k]+1);
+              this.Personalised[vertex-1] += " same as " + same ;
+              count++;
+            }
+            else
+            {
+              this.diff.add(this.route_followed[k]+1);
+            }
+          }
+        }
+        if (count == 0)
+        {
+          this.Personalised[vertex-1] += " no other vertices ";
+        }
+        this.Personalised[vertex-1] += "\n";
+        this.vertexH[vertex-1].setSame(equa);
+        this.vertexH[vertex-1].setDifferent(diff);
+      }
+    }
+    public String [] toHint() { return this.Hints;    }
+    public String [] toPersonalised(){ return this.Personalised; }
+    public VertexHint [] getVertexHint(){ return this.vertexH;}
+  }
+
+}
